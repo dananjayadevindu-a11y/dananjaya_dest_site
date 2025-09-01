@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ජපන් අක්ෂර ඉගෙනීමේ යෙදුම</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Isthmus Sinhala', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #b21f1f, #fdbb2d);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .tabs {
+            display: flex;
+            background-color: #f0f0f0;
+            border-bottom: 2px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 3px solid #b21f1f;
+            color: #b21f1f;
+        }
+        
+        .content {
+            padding: 20px;
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .character-card {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .character-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: #b21f1f;
+        }
+        
+        .japanese-char {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #b21f1f;
+        }
+        
+        .romanji, .sinhala {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .quiz-container {
+            text-align: center;
+        }
+        
+        .question {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2d3436;
+            font-weight: 500;
+        }
+        
+        .japanese-character {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 20px 0;
+            color: #b21f1f;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 18px;
+        }
+        
+        .option:hover {
+            background-color: #f8f9fa;
+            border-color: #fdbb2d;
+        }
+        
+        .correct {
+            background-color: #4CAF50 !important;
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .incorrect {
+            background-color: #f44336 !important;
+            color: white;
+            border-color: #f44336;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 16px;
+        }
+        
+        .nav-btn {
+            background-color: #b21f1f;
+            color: white;
+        }
+        
+        .nav-btn:hover {
+            background-color: #8a1c1c;
+        }
+        
+        .nav-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+            margin: 20px 0;
+        }
+        
+        .action-btn {
+            background-color: #b21f1f;
+            color: white;
+            padding: 12px 25px;
+            margin: 10px;
+        }
+        
+        .action-btn:hover {
+            background-color: #8a1c1c;
+        }
+        
+        .progress {
+            text-align: right;
+            color: #636e72;
+            margin-bottom: 10px;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin: 20px 0;
+            color: #b21f1f;
+            font-size: 24px;
+        }
+        
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .search-input {
+            padding: 12px 20px;
+            width: 100%;
+            max-width: 400px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .page-btn {
+            padding: 8px 15px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .page-btn.active {
+            background-color: #b21f1f;
+            color: white;
+            border-color: #b21f1f;
+        }
+        
+        @media (max-width: 768px) {
+            .character-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .japanese-character {
+                font-size: 48px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .character-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>ජපන් අක්ෂර ඉගෙනීමේ යෙදුම</h1>
+                <div>හිරගන, කටකන, සහ කන්ජි අක්ෂර</div>
+            </div>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('hiragana')">හිරගන (ひらがな)</div>
+            <div class="tab" onclick="showTab('katakana')">කටකන (カタカナ)</div>
+            <div class="tab" onclick="showTab('kanji')">කන්ජි (漢字)</div>
+            <div class="tab" onclick="showTab('hiraganaQuiz')">හිරගන ප්‍රශ්නෝත්තරය</div>
+            <div class="tab" onclick="showTab('katakanaQuiz')">කටකන ප්‍රශ්නෝත්තරය</div>
+            <div class="tab" onclick="showTab('kanjiQuiz')">කන්ජි ප්‍රශ්නෝත්තරය</div>
+        </div>
+        
+        <div class="content">
+            <!-- Hiragana Table -->
+            <div id="hiragana" class="tab-content">
+                <div class="section-title">මූලික හිරගන අක්ෂර (46)</div>
+                <div class="character-grid">
+                    <!-- Hiragana characters will be inserted by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Katakana Table -->
+            <div id="katakana" class="tab-content" style="display: none;">
+                <div class="section-title">මූලික කටකන අක්ෂර (46)</div>
+                <div class="character-grid">
+                    <!-- Katakana characters will be inserted by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Kanji Table -->
+            <div id="kanji" class="tab-content" style="display: none;">
+                <div class="section-title">පොදු කන්ජි අක්ෂර</div>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="kanjiSearch" placeholder="කන්ජි අක්ෂර ගවේෂණය කරන්න..." oninput="filterKanji()">
+                </div>
+                <div class="pagination" id="kanjiPagination">
+                    <!-- Pagination will be inserted by JavaScript -->
+                </div>
+                <div class="character-grid" id="kanjiGrid">
+                    <!-- Kanji characters will be inserted by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Hiragana Quiz -->
+            <div id="hiraganaQuiz" class="tab-content" style="display: none;">
+                <div class="quiz-container">
+                    <div class="progress" id="hiraganaProgress">ප්‍රශ්නය 1/10</div>
+                    <div class="question">මෙම අක්ෂරයේ උච්චාරණය කුමක්ද?</div>
+                    <div class="japanese-character" id="hiraganaChar">あ</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'hiragana')">අ</div>
+                        <div class="option" onclick="selectOption(this, 'hiragana')">ඉ</div>
+                        <div class="option" onclick="selectOption(this, 'hiragana')">උ</div>
+                        <div class="option" onclick="selectOption(this, 'hiragana')">එ</div>
+                    </div>
+                    <div class="navigation">
+                        <button class="nav-btn" id="hiraganaPrevBtn" onclick="prevQuestion('hiragana')" disabled>පෙර ප්‍රශ්නය</button>
+                        <button class="nav-btn" id="hiraganaNextBtn" onclick="nextQuestion('hiragana')">මීළඟ ප්‍රශ්නය</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Katakana Quiz -->
+            <div id="katakanaQuiz" class="tab-content" style="display: none;">
+                <div class="quiz-container">
+                    <div class="progress" id="katakanaProgress">ප්‍රශ්නය 1/10</div>
+                    <div class="question">මෙම අක්ෂරයේ උච්චාරණය කුමක්ද?</div>
+                    <div class="japanese-character" id="katakanaChar">ア</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'katakana')">අ</div>
+                        <div class="option" onclick="selectOption(this, 'katakana')">ඉ</div>
+                        <div class="option" onclick="selectOption(this, 'katakana')">උ</div>
+                        <div class="option" onclick="selectOption(this, 'katakana')">එ</div>
+                    </div>
+                    <div class="navigation">
+                        <button class="nav-btn" id="katakanaPrevBtn" onclick="prevQuestion('katakana')" disabled>පෙර ප්‍රශ්නය</button>
+                        <button class="nav-btn" id="katakanaNextBtn" onclick="nextQuestion('katakana')">මීළඟ ප්‍රශ්නය</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kanji Quiz -->
+            <div id="kanjiQuiz" class="tab-content" style="display: none;">
+                <div class="quiz-container">
+                    <div class="progress" id="kanjiProgress">ප්‍රශ්නය 1/10</div>
+                    <div class="question">මෙම අක්ෂරයේ අර්ථය කුමක්ද?</div>
+                    <div class="japanese-character" id="kanjiChar">人</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, 'kanji')">මනුස්සයා</div>
+                        <div class="option" onclick="selectOption(this, 'kanji')">පර්වතය</div>
+                        <div class="option" onclick="selectOption(this, 'kanji')">ගඟ</div>
+                        <div class="option" onclick="selectOption(this, 'kanji')">ගස</div>
+                    </div>
+                    <div class="navigation">
+                        <button class="nav-btn" id="kanjiPrevBtn" onclick="prevQuestion('kanji')" disabled>පෙර ප්‍රශ්නය</button>
+                        <button class="nav-btn" id="kanjiNextBtn" onclick="nextQuestion('kanji')">මීළඟ ප්‍රශ්නය</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Japanese characters database with Sinhala translations
+        const japaneseData = {
+            hiragana: [
+                { character: 'あ', romanji: 'a', sinhala: 'අ' },
+                { character: 'い', romanji: 'i', sinhala: 'ඉ' },
+                { character: 'う', romanji: 'u', sinhala: 'උ' },
+                { character: 'え', romanji: 'e', sinhala: 'එ' },
+                { character: 'お', romanji: 'o', sinhala: 'ඔ' },
+                { character: 'か', romanji: 'ka', sinhala: 'ක' },
+                { character: 'き', romanji: 'ki', sinhala: 'කි' },
+                { character: 'く', romanji: 'ku', sinhala: 'කු' },
+                { character: 'け', romanji: 'ke', sinhala: 'කෙ' },
+                { character: 'こ', romanji: 'ko', sinhala: 'කො' },
+                { character: 'さ', romanji: 'sa', sinhala: 'ස' },
+                { character: 'し', romanji: 'shi', sinhala: 'ෂි' },
+                { character: 'す', romanji: 'su', sinhala: 'සු' },
+                { character: 'せ', romanji: 'se', sinhala: 'සෙ' },
+                { character: 'そ', romanji: 'so', sinhala: 'සො' },
+                { character: 'た', romanji: 'ta', sinhala: 'ට' },
+                { character: 'ち', romanji: 'chi', sinhala: 'චි' },
+                { character: 'つ', romanji: 'tsu', sinhala: 'ට්සු' },
+                { character: 'て', romanji: 'te', sinhala: 'ටෙ' },
+                { character: 'と', romanji: 'to', sinhala: 'ටො' },
+                { character: 'な', romanji: 'na', sinhala: 'න' },
+                { character: 'に', romanji: 'ni', sinhala: 'නි' },
+                { character: 'ぬ', romanji: 'nu', sinhala: 'නු' },
+                { character: 'ね', romanji: 'ne', sinhala: 'නෙ' },
+                { character: 'の', romanji: 'no', sinhala: 'නො' },
+                { character: 'は', romanji: 'ha', sinhala: 'හ' },
+                { character: 'ひ', romanji: 'hi', sinhala: 'හි' },
+                { character: 'ふ', romanji: 'fu', sinhala: 'ෆු' },
+                { character: 'へ', romanji: 'he', sinhala: 'හෙ' },
+                { character: 'ほ', romanji: 'ho', sinhala: 'හො' },
+                { character: 'ま', romanji: 'ma', sinhala: 'ම' },
+                { character: 'み', romanji: 'mi', sinhala: 'මි' },
+                { character: 'む', romanji: 'mu', sinhala: 'මු' },
+                { character: 'め', romanji: 'me', sinhala: 'මෙ' },
+                { character: 'も', romanji: 'mo', sinhala: 'මො' },
+                { character: 'や', romanji: 'ya', sinhala: 'ය' },
+                { character: 'ゆ', romanji: 'yu', sinhala: 'යු' },
+                { character: 'よ', romanji: 'yo', sinhala: 'යො' },
+                { character: 'ら', romanji: 'ra', sinhala: 'ර' },
+                { character: 'り', romanji: 'ri', sinhala: 'රි' },
+                { character: 'る', romanji: 'ru', sinhala: 'රු' },
+                { character: 'れ', romanji: 're', sinhala: 'රෙ' },
+                { character: 'ろ', romanji: 'ro', sinhala: 'රො' },
+                { character: 'わ', romanji: 'wa', sinhala: 'ව' },
+                { character: 'を', romanji: 'wo', sinhala: 'වො' },
+                { character: 'ん', romanji: 'n', sinhala: 'න්' }
+            ],
+            katakana: [
+                { character: 'ア', romanji: 'a', sinhala: 'අ' },
+                { character: 'イ', romanji: 'i', sinhala: 'ඉ' },
+                { character: 'ウ', romanji: 'u', sinhala: 'උ' },
+                { character: 'エ', romanji: 'e', sinhala: 'එ' },
+                { character: 'オ', romanji: 'o', sinhala: 'ඔ' },
+                { character: 'カ', romanji: 'ka', sinhala: 'ක' },
+                { character: 'キ', romanji: 'ki', sinhala: 'කි' },
+                { character: 'ク', romanji: 'ku', sinhala: 'කු' },
+                { character: 'ケ', romanji: 'ke', sinhala: 'කෙ' },
+                { character: 'コ', romanji: 'ko', sinhala: 'කො' },
+                { character: 'サ', romanji: 'sa', sinhala: 'ස' },
+                { character: 'シ', romanji: 'shi', sinhala: 'ෂි' },
+                { character: 'ス', romanji: 'su', sinhala: 'සු' },
+                { character: 'セ', romanji: 'se', sinhala: 'සෙ' },
+                { character: 'ソ', romanji: 'so', sinhala: 'සො' },
+                { character: 'タ', romanji: 'ta', sinhala: 'ට' },
+                { character: 'チ', romanji: 'chi', sinhala: 'චි' },
+                { character: 'ツ', romanji: 'tsu', sinhala: 'ට්සු' },
+                { character: 'テ', romanji: 'te', sinhala: 'ටෙ' },
+                { character: 'ト', romanji: 'to', sinhala: 'ටො' },
+                { character: 'ナ', romanji: 'na', sinhala: 'න' },
+                { character: 'ニ', romanji: 'ni', sinhala: 'නි' },
+                { character: 'ヌ', romanji: 'nu', sinhala: 'නු' },
+                { character: 'ネ', romanji: 'ne', sinhala: 'නෙ' },
+                { character: 'ノ', romanji: 'no', sinhala: 'නො' },
+                { character: 'ハ', romanji: 'ha', sinhala: 'හ' },
+                { character: 'ヒ', romanji: 'hi', sinhala: 'හි' },
+                { character: 'フ', romanji: 'fu', sinhala: 'ෆු' },
+                { character: 'ヘ', romanji: 'he', sinhala: 'හෙ' },
+                { character: 'ホ', romanji: 'ho', sinhala: 'හො' },
+                { character: 'マ', romanji: 'ma', sinhala: 'ම' },
+                { character: 'ミ', romanji: 'mi', sinhala: 'මි' },
+                { character: 'ム', romanji: 'mu', sinhala: 'මු' },
+                { character: 'メ', romanji: 'me', sinhala: 'මෙ' },
+                { character: 'モ', romanji: 'mo', sinhala: 'මො' },
+                { character: 'ヤ', romanji: 'ya', sinhala: 'ය' },
+                { character: 'ユ', romanji: 'yu', sinhala: 'යු' },
+                { character: 'ヨ', romanji: 'yo', sinhala: 'යො' },
+                { character: 'ラ', romanji: 'ra', sinhala: 'ර' },
+                { character: 'リ', romanji: 'ri', sinhala: 'රි' },
+                { character: 'ル', romanji: 'ru', sinhala: 'රු' },
+                { character: 'レ', romanji: 're', sinhala: 'රෙ' },
+                { character: 'ロ', romanji: 'ro', sinhala: 'රො' },
+                { character: 'ワ', romanji: 'wa', sinhala: 'ව' },
+                { character: 'ヲ', romanji: 'wo', sinhala: 'වො' },
+                { character: 'ン', romanji: 'n', sinhala: 'න්' }
+            ],
+            kanji: [
+                { character: '人', romanji: 'hito', meaning: 'මනුස්සයා', sinhala: 'මනුස්සයා' },
+                { character: '山', romanji: 'yama', meaning: 'පර්වතය', sinhala: 'පර්වතය' },
+                { character: '川', romanji: 'kawa', meaning: 'ගඟ', sinhala: 'ගඟ' },
+                { character: '木', romanji: 'ki', meaning: 'ගස', sinhala: 'ගස' },
+                { character: '火', romanji: 'hi', meaning: 'ගින්න', sinhala: 'ගින්න' },
+                { character: '水', romanji: 'mizu', meaning: 'ජලය', sinhala: 'ජලය' },
+                { character: '土', romanji: 'tsuchi', meaning: 'පොළොව', sinhala: 'පොළොව' },
+                { character: '日', romanji: 'hi', meaning: 'සූර්යයා/දිනය', sinhala: 'සූර්යයා/දිනය' },
+                { character: '月', romanji: 'tsuki', meaning: 'චන්ද්රයා/මාසය', sinhala: 'චන්ද්රයා/මාසය' },
+                { character: '金', romanji: 'kane', meaning: 'රන්/මුදල්', sinhala: 'රන්/මුදල්' },
+                { character: '雨', romanji: 'ame', meaning: 'වර්ෂාව', sinhala: 'වර්ෂාව' },
+                { character: '車', romanji: 'kuruma', meaning: 'මෝටර් රථය', sinhala: 'මෝටර් රථය' },
+                { character: '馬', romanji: 'uma', meaning: 'අශ්වය', sinhala: 'අශ්වය' },
+                { character: '魚', romanji: 'sakana', meaning: 'මාළුවා', sinhala: 'මාළුවා' },
+                { character: '花', romanji: 'hana', meaning: 'මල', sinhala: 'මල' },
+                { character: '空', romanji: 'sora', meaning: 'අහස', sinhala: 'අහස' },
+                { character: '海', romanji: 'umi', meaning: 'මුහුද', sinhala: 'මුහුද' },
+                { character: '田', romanji: 'ta', meaning: 'වී කෙත්', sinhala: 'වී කෙත්' },
+                { character: '口', romanji: 'kuchi', meaning: 'පා', sinhala: 'පා' },
+                { character: '手', romanji: 'te', meaning: 'අත', sinhala: 'අත' },
+                { character: '目', romanji: 'me', meaning: 'ඇස', sinhala: 'ඇස' },
+                { character: '耳', romanji: 'mimi', meaning: 'කන', sinhala: 'කන' },
+                { character: '足', romanji: 'ashi', meaning: 'පාදය', sinhala: 'පාදය' },
+                { character: '心', romanji: 'kokoro', meaning: 'හදවත', sinhala: 'හදවත' },
+                { character: '男', romanji: 'otoko', meaning: 'පුරුෂයා', sinhala: 'පුරුෂයා' },
+                { character: '女', romanji: 'onna', meaning: 'ගැහැණු', sinhala: 'ගැහැණු' },
+                { character: '子', romanji: 'ko', meaning: 'ළමයා', sinhala: 'ළමයා' },
+                { character: '学', romanji: 'gaku', meaning: 'ඉගෙනීම', sinhala: 'ඉගෙනීම' },
+                { character: '校', romanji: 'kou', meaning: 'පාසල', sinhala: 'පාසල' },
+                { character: '生', romanji: 'sei', meaning: 'ජීවිතය', sinhala: 'ජීවිතය' }
+            ]
+        };
+
+        // Quiz variables
+        const quizQuestions = {
+            hiragana: [],
+            katakana: [],
+            kanji: []
+        };
+        
+        let currentQuestionIndex = {
+            hiragana: 0,
+            katakana: 0,
+            kanji: 0
+        };
+        
+        let score = {
+            hiragana: 0,
+            katakana: 0,
+            kanji: 0
+        };
+        
+        let userAnswers = {
+            hiragana: [],
+            katakana: [],
+            kanji: []
+        };
+
+        // Kanji pagination variables
+        let currentPage = 1;
+        const itemsPerPage = 20;
+
+        // Initialize the app
+        function init() {
+            // Populate hiragana and katakana tables
+            populateCharacterTable('hiragana');
+            populateCharacterTable('katakana');
+            
+            // Prepare quiz questions
+            prepareQuizQuestions('hiragana');
+            prepareQuizQuestions('katakana');
+            prepareQuizQuestions('kanji');
+            
+            // Initialize kanji table
+            showKanjiPage(1);
+            setupKanjiPagination();
+        }
+
+        // Populate character table
+        function populateCharacterTable(type) {
+            const container = document.querySelector(`#${type} .character-grid`);
+            container.innerHTML = '';
+            
+            japaneseData[type].forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                    <div class="japanese-char">${char.character}</div>
+                    <div class="romanji">${char.romanji}</div>
+                    <div class="sinhala">${char.sinhala}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Prepare quiz questions
+        function prepareQuizQuestions(type) {
+            quizQuestions[type] = [];
+            userAnswers[type] = [];
+            
+            // Create a copy of the characters array and shuffle it
+            const shuffledChars = [...japaneseData[type]].sort(() => Math.random() - 0.5);
+            
+            // Take first 10 characters for the quiz
+            for (let i = 0; i < 10 && i < shuffledChars.length; i++) {
+                const char = shuffledChars[i];
+                
+                // Generate options (correct answer + 3 random options)
+                let options;
+                if (type === 'kanji') {
+                    options = [char.meaning];
+                    while (options.length < 4) {
+                        const randomChar = japaneseData[type][Math.floor(Math.random() * japaneseData[type].length)];
+                        if (!options.includes(randomChar.meaning)) {
+                            options.push(randomChar.meaning);
+                        }
+                    }
+                } else {
+                    options = [char.sinhala];
+                    while (options.length < 4) {
+                        const randomChar = japaneseData[type][Math.floor(Math.random() * japaneseData[type].length)];
+                        if (!options.includes(randomChar.sinhala)) {
+                            options.push(randomChar.sinhala);
+                        }
+                    }
+                }
+                
+                // Shuffle options
+                const shuffledOptions = options.sort(() => Math.random() - 0.5);
+                
+                quizQuestions[type].push({
+                    character: char.character,
+                    correctAnswer: type === 'kanji' ? char.meaning : char.sinhala,
+                    options: shuffledOptions
+                });
+                
+                userAnswers[type].push(null);
+            }
+        }
+
+        // Show selected tab
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).style.display = 'block';
+            
+            // Add active class to selected tab
+            document.querySelectorAll('.tab').forEach(tab => {
+                if (tab.textContent.includes(tabName.replace('Quiz', ''))) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            // If it's a quiz tab, load the first question
+            if (tabName.includes('Quiz')) {
+                const type = tabName.replace('Quiz', '');
+                currentQuestionIndex[type] = 0;
+                loadQuestion(type);
+            }
+        }
+
+        // Load question for quiz
+        function loadQuestion(type) {
+            const question = quizQuestions[type][currentQuestionIndex[type]];
+            document.getElementById(`${type}Char`).textContent = question.character;
+            
+            const options = document.querySelectorAll(`#${type}Quiz .option`);
+            for (let i = 0; i < options.length; i++) {
+                options[i].textContent = question.options[i];
+                
+                // Reset styling
+                options[i].classList.remove('correct', 'incorrect');
+                
+                // If user has already answered this question, show the result
+                if (userAnswers[type][currentQuestionIndex[type]] !== null) {
+                    if (question.options[i] === question.correctAnswer) {
+                        options[i].classList.add('correct');
+                    } else if (question.options[i] === userAnswers[type][currentQuestionIndex[type]]) {
+                        options[i].classList.add('incorrect');
+                    }
+                }
+            }
+            
+            // Update progress
+            document.getElementById(`${type}Progress`).textContent = 
+                `ප්‍රශ්නය ${currentQuestionIndex[type] + 1}/${quizQuestions[type].length}`;
+            
+            // Update navigation buttons
+            document.getElementById(`${type}PrevBtn`).disabled = currentQuestionIndex[type] === 0;
+            document.getElementById(`${type}NextBtn`).textContent = 
+                currentQuestionIndex[type] === quizQuestions[type].length - 1 ? 'ප්‍රතිඵල' : 'මීළඟ ප්‍රශ්නය';
+        }
+
+        // Select an option in quiz
+        function selectOption(optionElement, type) {
+            // If already answered, do nothing
+            if (userAnswers[type][currentQuestionIndex[type]] !== null) return;
+            
+            const selectedAnswer = optionElement.textContent;
+            const correctAnswer = quizQuestions[type][currentQuestionIndex[type]].correctAnswer;
+            
+            // Save user's answer
+            userAnswers[type][currentQuestionIndex[type]] = selectedAnswer;
+            
+            // Check if answer is correct
+            if (selectedAnswer === correctAnswer) {
+                optionElement.classList.add('correct');
+                score[type]++;
+            } else {
+                optionElement.classList.add('incorrect');
+                
+                // Highlight the correct answer
+                const options = document.querySelectorAll(`#${type}Quiz .option`);
+                options.forEach(opt => {
+                    if (opt.textContent === correctAnswer) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+            
+            // Auto move to next question after a short delay
+            setTimeout(() => {
+                if (currentQuestionIndex[type] < quizQuestions[type].length - 1) {
+                    nextQuestion(type);
+                }
+            }, 1000);
+        }
+
+        // Go to next question
+        function nextQuestion(type) {
+            if (currentQuestionIndex[type] < quizQuestions[type].length - 1) {
+                currentQuestionIndex[type]++;
+                loadQuestion(type);
+            } else {
+                // Show results
+                alert(`ප්‍රශ්නෝත්තරය අවසන්!\nඔබේ ලකුණු: ${score[type]}/${quizQuestions[type].length}`);
+                
+                // Reset quiz for next time
+                prepareQuizQuestions(type);
+                currentQuestionIndex[type] = 0;
+                score[type] = 0;
+                loadQuestion(type);
+            }
+        }
+
+        // Go to previous question
+        function prevQuestion(type) {
+            if (currentQuestionIndex[type] > 0) {
+                currentQuestionIndex[type]--;
+                loadQuestion(type);
+            }
+        }
+
+        // Show kanji for specific page
+        function showKanjiPage(page) {
+            currentPage = page;
+            const container = document.getElementById('kanjiGrid');
+            container.innerHTML = '';
+            
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, japaneseData.kanji.length);
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                const char = japaneseData.kanji[i];
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                    <div class="japanese-char">${char.character}</div>
+                    <div class="romanji">${char.romanji}</div>
+                    <div class="sinhala">${char.sinhala}</div>
+                    <div class="meaning">${char.meaning}</div>
+                `;
+                container.appendChild(card);
+            }
+            
+            // Update pagination buttons
+            document.querySelectorAll('.page-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (parseInt(btn.dataset.page) === page) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Setup kanji pagination
+        function setupKanjiPagination() {
+            const totalPages = Math.ceil(japaneseData.kanji.length / itemsPerPage);
+            const container = document.getElementById('kanjiPagination');
+            container.innerHTML = '';
+            
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('div');
+                btn.className = 'page-btn';
+                if (i === 1) btn.classList.add('active');
+                btn.textContent = i;
+                btn.dataset.page = i;
+                btn.onclick = () => showKanjiPage(i);
+                container.appendChild(btn);
+            }
+        }
+
+        // Filter kanji based on search input
+        function filterKanji() {
+            const searchTerm = document.getElementById('kanjiSearch').value.toLowerCase();
+            const container = document.getElementById('kanjiGrid');
+            container.innerHTML = '';
+            
+            const filteredKanji = japaneseData.kanji.filter(char => 
+                char.character.toLowerCase().includes(searchTerm) ||
+                char.romanji.toLowerCase().includes(searchTerm) ||
+                char.meaning.toLowerCase().includes(searchTerm) ||
+                char.sinhala.toLowerCase().includes(searchTerm)
+            );
+            
+            filteredKanji.forEach(char => {
+                const card = document.createElement('div');
+                card.className = 'character-card';
+                card.innerHTML = `
+                    <div class="japanese-char">${char.character}</div>
+                    <div class="romanji">${char.romanji}</div>
+                    <div class="sinhala">${char.sinhala}</div>
+                    <div class="meaning">${char.meaning}</div>
+                `;
+                container.appendChild(card);
+            });
+            
+            // Hide pagination when searching
+            document.getElementById('kanjiPagination').style.display = 
+                searchTerm ? 'none' : 'flex';
+        }
+
+        // Initialize the app when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
